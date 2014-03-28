@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <!-- DASH-AVC/265 reference implementation -->
+<script src="dash.all.js"></script>
+<script>
+// setup the video element and attach it to the Dash player
+function setupVideo() {
+  var url = "http://www.inf.ufes.br/~rfavaro/dash/dataset/without_base_url/big_buck_bunny_dash.mpd";
+  var context = new Dash.di.DashContext();
+  var player = new MediaPlayer(context);
+                  player.startup();
+                  player.attachView(document.querySelector("#videoplayer"));
+                  player.attachSource(url);
+}
+</script>
+<style>
+video {
+  width: 80%;
+  height: 80%;
+}
+</style>
+  <head><title>Dashhhhhhhhhhhhh</title><head>
+ <body onload="setupVideo()">
+    <h1>Adaptive Streaming with HTML5</h1>
+    <video id="videoplayer" controls></video>
+  </body>
+</html>

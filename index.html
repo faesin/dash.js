@@ -103,12 +103,64 @@
 	<!-- App -->
 	<script src="app/metrics.js"></script>
 	<script src="app/main.js"></script>
+
+	<script>
+		function setUpStream()
+		{
+			for (var i = Things.length - 1; i >= 0; i--) {
+				Things[i]
+			};
+			console.log(JSON.stringify(items));
+		}
+	</script>
 </head>
 <body ng-controller="DashController">
+	<div class="modal fade" id="streamModal">
+		<div class="modal-dialog">
+			<div class="list-group modal-list">
+				<a
+				   ng-repeat="item in availableStreams"
+				   href="#"
+				   class="list-group-item"
+				   ng-click="setStream(item)"
+				   data-dismiss="modal"
+				   ng-show="isStreamAvailable(item.browsers)">
+					{{item.name}}
+				</a>
+			</div>
+		</div>
+	</div>
 
 	<div class="container">
 		<div class="row title-header">
 		</div>
+		
+		<div class="row">
+            <div class="input-group">
+                <div id="desktop-streams" class="input-group-btn">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        Stream <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li
+                            ng-repeat="item in availableStreams"
+                            ng-click="setStream(item)"
+                            ng-show="isStreamAvailable(item.browsers)">
+                            <a>{{item.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="mobile-streams" class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" href="#streamModal">
+                        Stream <span class="caret"></span>
+                    </button>
+                </div>
+                <input type="text" class="form-control" placeholder="manifest" ng-model="selectedItem.url">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" ng-click="doLoad()">Load</button>
+                </span>
+            </div>
+        </div>
 
 		<div class="row">
 			<div class="dash-video-player col-md-9">
@@ -122,7 +174,7 @@
 							<button
 								type="button"
 								class="btn btn-default"
-								ng-click="setStream(); doLoad()">
+								ng-click="setUpStream()">
 								<span>Load</span>
 							</button>
 						</div>

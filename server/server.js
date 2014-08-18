@@ -4,7 +4,7 @@ var static = require('node-static'),
 	app = http.createServer(function (req, res) {
 		file.serve(req, res);
 	}).listen(8080),
-	io = require('socket.io').listen(app),
+	io = require('socket.io').listen(app).set('log level', 1),
 	fs = require('fs'),
 	swarm = require('./swarm.js');
 
@@ -20,32 +20,30 @@ function handler (req, res) {
 	});
 }
 
-var numSwarms = 0,
-	numPeers = 0;
-
 io.sockets.on('connection', function (socket) {
-	var addedPeer = false;
 	var address = socket.handshake.address;
 	
 	console.log("Client connected from " + address.address + ":" + address.port);
 
-	socket.on('addPeer', function (data) {
+	socket.on('addPeer', function () {
 		console.log("addPeer emited: Adding peer id " + socket.id);
-		//Peers[data.userId] = socket.id;
-		//Peers[data.userId].address = address.address;
-		//Peers[data.userId].port = address.port;
-		swarm.addPeer(data.mpd, socket.id, address);
-		++numPeers;
-		addedPeer = true;
+		swarm.addPeer(socket.id, address);
 	});
 
-	socket.on('getSwarmList', function (data) {
+	//fuk dis
+	// socket.on('getSwarmList', function () {
+	// 	console.log("Sending swarm list to " + socket.id);
+	// 	io.sockets.socket(socket.id).emit('swarmList', swarm.getSwarmList());
+	// });
 
+	socket.on('connectInSwarm', function (data) {
+		console.log("Entering swarm with mpd: " + data.mpd);
+		swarm.connectInSwarm(socket.id, data.mpd);
 	});
 
 	socket.on('getPeerList', function (data) {
-		console.log("Sending peer list to " + data.userId);
-		io.sockets.socket(Peers[data.userId].socket).emit("peer-list", Peers);
+		console.log("Sending peer list to " + socket.id);
+		io.sockets.socket(socket.id).emit('peerList', swarm.getPeerList(data.mpd));
 	});
 
 	socket.on('getPeerInfo', function (data) {
@@ -64,10 +62,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('disconnect', function () {
-		// if(addedPeer)
-		// {
-		// 	delete Peers[socket.userId];
-		// 	--numPeers;
-		// }
+		console.log("Disconnect emmited by " + socket.id);
+		swarm.removePeer(socket.id);
 	});
 });
